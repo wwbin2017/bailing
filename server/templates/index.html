@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>百聆(BaiLing)</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e2e2e2 0%, #ffffff 100%);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        header {
+            background: #007bff;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-bottom: 2px solid #0056b3;
+        }
+        #dialogue-container {
+            flex: 1;
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            overflow-y: auto;
+            height: calc(100vh - 100px);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            /* 隐藏滚动条 */
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* Internet Explorer and Edge */
+        }
+        #dialogue-container::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, and Opera */
+        }
+        .message {
+            /*padding: 15px;*/
+            position: relative;
+            transition: background 0.3s, transform 0.2s;
+            display: flex;
+
+            align-items: center;  /* 垂直居中 */
+
+        }
+        .message.role-user {
+            color: #2e7d32;
+            align-self: flex-start;
+        }
+        .message.role-bot {
+            color: #f57c00;
+            align-self: flex-end;
+        }
+        .message.role-admin {
+            color: #5e35b1;
+            align-self: flex-start;
+        }
+        .message.role-system {
+            color: #37474f;
+            align-self: center;
+            text-align: center;
+        }
+        .role {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+        }
+        .message-content {
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+        }
+        .loading {
+            text-align: center;
+            font-size: 18px;
+            color: #888;
+            margin-top: 20px;
+        }
+        .fade-in {
+            animation: fadeIn 1s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @media (max-width: 600px) {
+            #dialogue-container {
+                padding: 10px;
+                height: calc(100vh - 80px);
+            }
+            .message-content {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>百聆实时对话(BaiLing)</h1>
+    </header>
+    <div id="dialogue-container">
+        <div class="loading"><i class="fas fa-spinner fa-spin"></i> 加载中...</div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.min.js"></script>
+    <script>
+        const socket = io();
+
+        function updateDialogue(dialogue) {
+            const container = document.getElementById('dialogue-container');
+            const existingMessages = container.querySelectorAll('.message');
+
+            // 获取当前对话的消息数量
+            const existingCount = existingMessages.length;
+
+            // 如果已经显示的消息数量与新消息数量相同，直接返回，不做更新
+            if (existingCount === dialogue.length) {
+                return;
+            }
+
+            // 只添加新消息
+            // ${message.role}：
+            for (let i = existingCount; i < dialogue.length; i++) {
+                const message = dialogue[i];
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message role-' + message.role + ' fade-in';
+                messageDiv.innerHTML = `
+                    <div class="message-content">
+                    ${message.content}
+                    </div>
+                `;
+                container.appendChild(messageDiv);
+            }
+
+            // Auto-scroll to the bottom for new messages
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function updateDialogue1(dialogue) {
+            const container = document.getElementById('dialogue-container');
+            container.innerHTML = ''; // 清空当前对话历史
+
+            if (dialogue.length === 0) {
+                container.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> 没有对话记录</div>';
+                return;
+            }
+
+            dialogue.forEach(message => {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message role-' + message.role + ' fade-in';
+                messageDiv.innerHTML = `
+                    <div class="message-content">
+                    ${message.role}：
+                    ${message.content}
+                    </div>
+                `;
+                container.appendChild(messageDiv);
+            });
+
+            // Auto-scroll to the bottom
+            container.scrollTop = container.scrollHeight;
+        }
+
+        socket.on('update_dialogue', function(data) {
+            updateDialogue(data);
+        });
+
+        // Initial connection
+        socket.emit('connect');
+    </script>
+</body>
+</html>

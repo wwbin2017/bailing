@@ -1,0 +1,17 @@
+chattts==0.1.1
+edge_tts==6.1.12
+Flask==3.0.3
+Flask_SocketIO==5.3.7
+funasr==1.1.6
+gTTS==2.5.3
+numpy==1.26.4
+openai==1.45.0
+PyAudio==0.2.14
+pydub==0.25.1
+PyYAML==6.0.2
+PyYAML==6.0.2
+silero_vad==5.1
+torch==2.4.1
+torchaudio==2.4.1
+Flask-SocketIO~=5.3.7
+requests~=2.32.3

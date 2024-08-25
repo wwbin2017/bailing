@@ -5,6 +5,9 @@ __pycache__/
 
 # C extensions
 *.so
+models/
+.idea/
+bailing/__pycache__
 
 # Distribution / packaging
 .Python

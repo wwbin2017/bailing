@@ -1,0 +1,59 @@
+name: 百聆（bailing） 
+version: 1.0
+
+logging:
+  level: debug
+
+interrupt: false
+# 具体处理时选择的模块
+selected_module:
+  Recorder: RecorderPyAudio
+  ASR: FunASR
+  VAD: SileroVAD
+  LLM: OpenAILLM
+  TTS: MacTTS
+  Player: CmdPlayer
+
+Recorder:
+  RecorderPyAudio:
+    output_file: tmp/
+
+ASR:
+  FunASR:
+    model_dir: models/SenseVoiceSmall
+    output_file: tmp/
+
+VAD:
+  SileroVAD:
+    sampling_rate: 16000
+    threshold: 0.5
+    min_silence_duration_ms: 200
+
+LLM:
+  OpenAILLM:
+    model_name: deepseek-chat
+    url: https://api.deepseek.com
+    api_key:
+
+TTS:
+  MacTTS:
+    voice: Tingting
+    output_file: tmp/
+  EdgeTTS:
+    voice: zh-CN-XiaoxiaoNeural
+    output_file: tmp/
+  GTTS:
+    lang: zh
+    output_file: tmp/
+  CosyvoiceTTS:
+    output_file: tmp/
+  CHATTTS:
+    output_file: tmp/
+
+Player:
+  CmdPlayer: null
+  PyaudioPlayer: null
+
+
+
+
