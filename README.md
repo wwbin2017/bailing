@@ -33,14 +33,11 @@
 | 未播放| 未说话 | 正常 |
 | 未播放| 说话 | VAD判断，ASR识别 |
 
-## 展示
+## Demo
 
-[对话演示1](https://www.zhihu.com/zvideo/1818998325594177537)
+[bailing audio dialogue](https://www.zhihu.com/zvideo/1818998325594177537)
 
-[对话演示2](https://www.zhihu.com/zvideo/1818994917940260865)
-
-
-
+[bailing audio dialogue](https://www.zhihu.com/zvideo/1818994917940260865)
 
 
 ## 功能特性
