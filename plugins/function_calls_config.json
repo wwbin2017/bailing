@@ -1,0 +1,115 @@
+[
+    {
+        "type": "function",
+        "function": {
+            "name": "get_weather",
+            "description": "获取某个地点的天气，用户应先提供一个位置，比如用户说杭州天气，参数为：zhejiang/hangzhou，比如用户说北京天气怎么样，参数为：beijing/beijing",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "city": {
+                        "type": "string",
+                        "description": "城市，zhejiang/hangzhou"
+                    }
+                },
+                "required": [
+                    "city"
+                ]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "ielts_speaking_practice",
+            "description": "IELTS Speaking Practice",
+            "parameters": {
+                "type": "object",
+                "properties": {
+
+                },
+                "required": [
+
+                ]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "get_day_of_week",
+            "description": "获取当前的星期几，或者多少号，如果用户询问时间，调用该函数",
+            "parameters": {
+                "type": "object",
+                "properties": {
+
+                },
+                "required": [
+
+                ]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "schedule_task",
+            "description": "创建一个定时任务，用户应提供任务的执行时间和任务内容。\n比如用户说每天早上8点提醒我喝水，参数为：time: '08:00', content: '提醒我喝水'。",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "time": {
+                        "type": "string",
+                        "description": "任务的执行时间，格式为HH:mm，比如'08:00'表示早上8点。"
+                    },
+                    "content": {
+                        "type": "string",
+                        "description": "任务的内容，比如'提醒我喝水'。"
+                    }
+                },
+                "required": [
+                    "time",
+                    "content"
+                ]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "open_application",
+            "description": "在 Mac 电脑上打开指定的应用程序，用户应提供应用程序的名称。\n比如用户说打开Safari，参数为：application_name: 'Safari'。",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "application_name": {
+                        "type": "string",
+                        "description": "应用程序的名称，比如'Safari'、'Finder'、'Notes'等。"
+                    }
+                },
+                "required": [
+                    "application_name"
+                ]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "web_search",
+            "description": "在网上搜索指定的关键词，用户应提供搜索内容。\n比如用户说搜索'最新的科技新闻'，参数为：query: '最新的科技新闻'。",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query": {
+                        "type": "string",
+                        "description": "搜索关键词，比如'最新的科技新闻'、'Python编程教程'等。"
+                    }
+                },
+                "required": [
+                    "query"
+                ]
+            }
+        }
+    }
+]
