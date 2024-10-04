@@ -6,6 +6,11 @@ import threading
 import wave
 import pyaudio
 from pydub import  AudioSegment
+import pygame
+import sounddevice as sd
+import numpy as np
+from playsound import playsound
+
 
 logger = logging.getLogger(__name__)
 
@@ -18,6 +23,13 @@ class AbstractPlayer(object):
         self._stop_event = threading.Event()
         self.consumer_thread = threading.Thread(target=self._playing)
         self.consumer_thread.start()
+
+    @staticmethod
+    def to_wav(audio_file):
+        tmp_file = audio_file + ".wav"
+        wav_file = AudioSegment.from_file(audio_file)
+        wav_file.export(tmp_file, format="wav")
+        return tmp_file
 
     def _playing(self):
         while not self._stop_event.is_set():
@@ -33,7 +45,8 @@ class AbstractPlayer(object):
 
     def play(self, data):
         logger.info(f"play file {data}")
-        self.play_queue.put(data)
+        audio_file = self.to_wav(data)
+        self.play_queue.put(audio_file)
 
     def stop(self):
         self._clear_queue()
@@ -44,7 +57,7 @@ class AbstractPlayer(object):
         if self.consumer_thread.is_alive():
             self.consumer_thread.join()
 
-    def is_playing(self):
+    def get_playing_status(self):
         """正在播放和队列非空，为正在播放状态"""
         return self.is_playing or (not self.play_queue.empty())
 
@@ -80,13 +93,6 @@ class PyaudioPlayer(AbstractPlayer):
         super(PyaudioPlayer, self).__init__(*args, **kwargs)
         self.p = pyaudio.PyAudio()
 
-    @staticmethod
-    def to_wav(audio_file):
-        tmp_file = audio_file + ".wav"
-        wav_file = AudioSegment.from_file(audio_file)
-        wav_file.export(tmp_file, format="wav")
-        return wav_file
-
     def do_playing(self, audio_file):
         chunk = 1024
         try:
@@ -109,6 +115,101 @@ class PyaudioPlayer(AbstractPlayer):
         super().stop()
         if self.p:
             self.p.terminate()
+
+
+class PygamePlayer(AbstractPlayer):
+    def __init__(self, *args, **kwargs):
+        super(PygamePlayer, self).__init__(*args, **kwargs)
+        pygame.mixer.init()
+
+    def do_playing(self, audio_file):
+        try:
+            while pygame.mixer.music.get_busy():
+                pygame.time.Clock().tick(100)
+            logger.debug("PygamePlayer 加载音频中")
+            pygame.mixer.music.load(audio_file)
+            logger.debug("PygamePlayer 加载音频结束，开始播放")
+            pygame.mixer.music.play()
+            logger.debug(f"播放完成：{audio_file}")
+        except Exception as e:
+            logger.error(f"播放音频失败: {e}")
+
+    def get_playing_status(self):
+        """正在播放和队列非空，为正在播放状态"""
+        return self.is_playing or (not self.play_queue.empty()) or pygame.mixer.music.get_busy()
+
+    def stop(self):
+        super().stop()
+        pygame.mixer.music.stop()
+
+class PygameSoundPlayer(AbstractPlayer):
+    """支持预加载"""
+    def __init__(self, *args, **kwargs):
+        super(PygameSoundPlayer, self).__init__(*args, **kwargs)
+        pygame.mixer.init()
+
+    def do_playing(self, current_sound):
+        try:
+            logger.debug("PygameSoundPlayer 播放音频中")
+            current_sound.play()  # 播放音频
+            while pygame.mixer.get_busy(): #current_sound.get_busy():  # 检查当前音频是否正在播放
+                pygame.time.Clock().tick(100)  # 每秒检查100次
+            del current_sound
+            logger.debug(f"PygameSoundPlayer 播放完成")
+        except Exception as e:
+            logger.error(f"播放音频失败: {e}")
+
+    def play(self, data):
+        logger.info(f"play file {data}")
+        audio_file = self.to_wav(data)
+        sound = pygame.mixer.Sound(audio_file)
+        self.play_queue.put(sound)
+
+    def stop(self):
+        super().stop()
+
+
+class SoundDevicePlayer(AbstractPlayer):
+    def do_playing(self, audio_file):
+        try:
+            wf = wave.open(audio_file, 'rb')
+            data = wf.readframes(wf.getnframes())
+            sd.play(np.frombuffer(data, dtype=np.int16), samplerate=wf.getframerate())
+            sd.wait()
+            logger.debug(f"播放完成：{audio_file}")
+        except Exception as e:
+            logger.error(f"播放音频失败: {e}")
+
+    def stop(self):
+        super().stop()
+        sd.stop()
+
+
+class PydubPlayer(AbstractPlayer):
+    def do_playing(self, audio_file):
+        try:
+            audio = AudioSegment.from_file(audio_file)
+            audio.play()
+            logger.debug(f"播放完成：{audio_file}")
+        except Exception as e:
+            logger.error(f"播放音频失败: {e}")
+
+    def stop(self):
+        super().stop()
+        # Pydub does not provide a stop method
+
+
+class PlaysoundPlayer(AbstractPlayer):
+    def do_playing(self, audio_file):
+        try:
+            playsound(audio_file)
+            logger.debug(f"播放完成：{audio_file}")
+        except Exception as e:
+            logger.error(f"播放音频失败: {e}")
+
+    def stop(self):
+        super().stop()
+        # playsound does not provide a stop method
 
 
 def create_instance(class_name, *args, **kwargs):

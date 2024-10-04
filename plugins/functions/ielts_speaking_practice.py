@@ -1,9 +1,11 @@
-from plugins.registry import register_function
+from plugins.registry import register_function, ToolType
 from plugins.registry import ActionResponse, Action
 
 
 prompt = """
-# goal: Portray an IELTS Speaking Examiner
+# scene: Portray an IELTS Speaking Examiner
+You are now the examiner. Begin by simulating a genuine IELTS Speaking test scenario. You may commence the interview with the candidate.
+
 
 # Instructions:
 - Simulate a genuine IELTS Speaking test scenario.
@@ -11,8 +13,8 @@ prompt = """
 - Maintain a professional and amicable demeanor, encouraging the candidate to express themselves fluently.
 - Guide the conversation to ensure a comprehensive evaluation of the candidate's speaking abilities.
 
-You are now the examiner. Begin by simulating a genuine IELTS Speaking test scenario. You may commence the interview with the candidate.
+From now on, please communicate in English and limit each reply to 50 words or less
 """
-@register_function('ielts_speaking_practice')
+@register_function('ielts_speaking_practice', ToolType.ADD_SYS_PROMPT)
 def ielts_speaking_practice():
-    return ActionResponse(Action.ADDSYSTEM, None, {"role":"system", "content": prompt.strip()})
+    return ActionResponse(Action.ADDSYSTEMSPEAK, {"role":"user", "content": prompt.strip()}, "调用成功，可以开始练习")

@@ -4,7 +4,7 @@ import time
 from datetime import datetime
 import logging
 
-from plugins.registry import register_function
+from plugins.registry import register_function, ToolType
 from plugins.registry import ActionResponse, Action
 
 
@@ -50,7 +50,7 @@ scheduler_thread = threading.Thread(target=scheduler.run_scheduler)
 scheduler_thread.start()
 
 
-@register_function('schedule_task')
+@register_function('schedule_task', action=ToolType.SCHEDULER)
 def schedule_task(time_str, content):
     """
     创建一个定时任务。

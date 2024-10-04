@@ -1,11 +1,11 @@
 import requests
 from bs4 import BeautifulSoup
 
-from plugins.registry import register_function
+from plugins.registry import register_function, ToolType
 from plugins.registry import ActionResponse, Action
 
 
-@register_function('web_search')
+@register_function('web_search', action=ToolType.TIME_CONSUMING)
 def web_search(query, engine="baidu"):
     """
     在指定的搜索引擎上进行搜索，并返回搜索结果页面的 HTML 内容。
@@ -33,6 +33,6 @@ def web_search(query, engine="baidu"):
 
     # 检查请求是否成功
     if response.status_code == 200:
-        return ActionResponse(Action.REQLLM, None, response.text)
+        return ActionResponse(Action.REQLLM, response.text, None)
     else:
-        return ActionResponse(Action.REQLLM, None, "搜索失败")
+        return ActionResponse(Action.REQLLM, "搜索失败", None)

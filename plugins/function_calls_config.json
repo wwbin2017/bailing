@@ -22,11 +22,14 @@
         "type": "function",
         "function": {
             "name": "ielts_speaking_practice",
-            "description": "IELTS Speaking Practice",
+            "description": "提供雅思口语练习的题目和建议，用户可以请求特定主题的练习，例如：'请给我一个旅游主题的雅思口语题",
             "parameters": {
                 "type": "object",
                 "properties": {
-
+                    "topic": {
+                        "type": "string",
+                        "description": "练习主题，例如：旅游、工作、教育等"
+                    }
                 },
                 "required": [
 
@@ -38,7 +41,7 @@
         "type": "function",
         "function": {
             "name": "get_day_of_week",
-            "description": "获取当前的星期几，或者多少号，如果用户询问时间，调用该函数",
+            "description": "获取当前日期的星期几，用户可以询问当前日期或时间，参数为空，因为函数自动获取当前时间",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -108,6 +111,25 @@
                 },
                 "required": [
                     "query"
+                ]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "search_local_documents",
+            "description": "查询本地文档，用户需提供查询关键词，返回匹配的文档列表，例如用户说'查找关于机器学习的文档'，参数为：{'keyword': '机器学习'}",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "keyword": {
+                        "type": "string",
+                        "description": "查询关键词，例如：'机器学习'、'Python编程'等"
+                    }
+                },
+                "required": [
+                    "keyword"
                 ]
             }
         }

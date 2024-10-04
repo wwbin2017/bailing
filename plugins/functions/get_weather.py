@@ -1,10 +1,10 @@
 import requests
 from bs4 import BeautifulSoup
 
-from plugins.registry import register_function
+from plugins.registry import register_function, ToolType
 from plugins.registry import ActionResponse, Action
 
-@register_function('get_weather')
+@register_function('get_weather', ToolType.WAIT)
 def get_weather(city: str):
     """
     "获取某个地点的天气，用户应先提供一个位置，\n比如用户说杭州天气，参数为：zhejiang/hangzhou，\n\n比如用户说北京天气怎么样，参数为：beijing/beijing",
@@ -20,7 +20,8 @@ def get_weather(city: str):
     soup = BeautifulSoup(response.text, "html.parser")
     weather = soup.find('meta', attrs={'name':'description'})["content"]
     weather = weather.replace("墨迹天气", "")
-    return ActionResponse(Action.REQLLM, None, weather)
+    return ActionResponse(Action.REQLLM, weather, None)
 
 if __name__ == "__main__":
-    print(get_weather("zhejiang/hangzhou"))
+    rsp = get_weather("zhejiang/hangzhou")
+    print(rsp.response, rsp.action, rsp.result)

@@ -1,7 +1,7 @@
 from datetime import datetime
-from plugins.registry import register_function
+from plugins.registry import register_function, ToolType
 from plugins.registry import ActionResponse, Action
-@register_function('get_day_of_week')
+@register_function('get_day_of_week', action=ToolType.WAIT)
 def get_day_of_week()->ActionResponse:
     # 获取当前日期和时间
     current_datetime = datetime.now()
@@ -23,8 +23,8 @@ def get_day_of_week()->ActionResponse:
     }
     # 获取星期几的中文名称
     weekday_name = chinese_weekdays[weekday_number]
-    response =  f"当前日期: {current_date}，当前时间: {current_time.strftime('%H:%M:%S')}，星期几: {weekday_name}"
-    return ActionResponse(Action.REQLLM, None, response)
+    response =  f"当前日期: {current_date}，当前时间: {current_time.strftime('%H点%M分%秒')}，星期几: {weekday_name}"
+    return ActionResponse(Action.REQLLM, response, None)
 
 if __name__ == "__main__":
     print(get_day_of_week())

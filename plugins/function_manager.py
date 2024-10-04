@@ -49,7 +49,7 @@ def call_function(func_name, *args, **kwargs):
         return f"调用函数 '{func_name}' 时出错：{str(e)}"
 
 
-def handle_function_call(call):
+def handle_function_call():
     func_name = "get_weather"
     args = {"city": "zhejiang/hangzhou"}
     if isinstance(args, dict):
@@ -60,9 +60,9 @@ def handle_function_call(call):
     return result
 
 
-
-
 if __name__ == "__main__":
     # 调用并打印结果
-    result = handle_function_call("")
-    print(result)  # 输出: The weather in Hangzhou is sunny with a temperature of 25°C.
+    result = handle_function_call()
+    print(result)
+    print(result.response, result.action, result.result)
+

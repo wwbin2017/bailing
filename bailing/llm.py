@@ -32,6 +32,21 @@ class OpenAILLM(LLM):
         except Exception as e:
             logger.error(f"Error in response generation: {e}")
 
+    def response_call(self, dialogue, functions_call):
+        try:
+            responses = self.client.chat.completions.create(  #) ChatCompletion.create(
+                model=self.model_name,
+                messages=dialogue,
+                stream=True,
+                tools=functions_call
+            )
+            #print(responses)
+            for chunk in responses:
+                yield chunk.choices[0].delta.content, chunk.choices[0].delta.tool_calls
+                #yield chunk.choices[0].delta.get("content", "")
+        except Exception as e:
+            logger.error(f"Error in response generation: {e}")
+
 
 def create_instance(class_name, *args, **kwargs):
     # 获取类对象

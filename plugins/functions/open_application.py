@@ -1,11 +1,11 @@
-from plugins.registry import register_function
+from plugins.registry import register_function, ToolType
 from plugins.registry import ActionResponse, Action
 import subprocess
 import logging
 
 logger = logging.getLogger(__name__)
 
-@register_function('open_application')
+@register_function('open_application', action=ToolType.NONE)
 def open_application(app_name):
     """
     打开指定的 macOS 应用程序。
@@ -22,6 +22,6 @@ def open_application(app_name):
     except subprocess.CalledProcessError:
         logger.error(f"无法启动应用程序: {app_name}")
         response = "打开应用失败"
-        return ActionResponse(Action.REQLLM, None, response)
+        return ActionResponse(Action.REQLLM, response, None)
 
 

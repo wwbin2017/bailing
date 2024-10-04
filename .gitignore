@@ -5,9 +5,13 @@ __pycache__/
 
 # C extensions
 *.so
-models/
 .idea/
 bailing/__pycache__
+assets/*.mov
+.DS_Store
+tmp/
+asset/
+models/SenseVoice*
 
 # Distribution / packaging
 .Python

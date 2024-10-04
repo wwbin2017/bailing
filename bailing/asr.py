@@ -36,8 +36,7 @@ class ASR(ABC):
 class FunASR(ASR):
     def __init__(self, config):
         self.model_dir = config.get("model_dir")
-        self.output_dir = config.get("output_dir")
-        print(config)
+        self.output_dir = config.get("output_file")
 
         self.model = AutoModel(
             model=self.model_dir,
