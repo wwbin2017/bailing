@@ -284,7 +284,7 @@ class Robot(ABC):
                     if is_segment(response_message):
                         segment_text = "".join(response_message[start:])
                         # 为了保证语音的连贯，至少2个字才转tts
-                        if len(segment_text) <= 2:
+                        if len(segment_text) <= max(2, start):
                             continue
                         future = self.executor.submit(self.speak_and_play, segment_text)
                         self.tts_queue.put(future)
@@ -372,7 +372,7 @@ class Robot(ABC):
                 if is_segment(response_message):
                     segment_text = "".join(response_message[start:])
                     # 为了保证语音的连贯，至少2个字才转tts
-                    if len(segment_text)<=2:
+                    if len(segment_text)<=max(2, start):
                         continue
                     future = self.executor.submit(self.speak_and_play, segment_text)
                     self.tts_queue.put(future)
