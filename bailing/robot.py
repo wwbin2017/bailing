@@ -181,6 +181,13 @@ class Robot(ABC):
             future = self.executor.submit(self.speak_and_play, result.response)
             self.tts_queue.put(future)
 
+        """ 语音唤醒
+        if time.time() - self.start_time>=60:
+            self.silence_status = True
+
+        if self.silence_status:
+            return
+        """
         if vad_status is None:
             return
         if "start" in vad_status:

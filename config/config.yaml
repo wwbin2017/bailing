@@ -4,6 +4,9 @@ version: 1.0
 logging:
   level: debug
 
+# 唤醒词
+WakeWord: 百聆
+
 interrupt: false
 # 是否开启工具调用
 StartTaskMode: true
