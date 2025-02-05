@@ -14,6 +14,7 @@ import edge_tts
 import ChatTTS
 import torch
 import torchaudio
+import soundfile as sf
 
 logger = logging.getLogger(__name__)
 
@@ -163,6 +164,42 @@ class CHATTTS(AbstractTTS):
         except Exception as e:
             logger.error(f"Failed to generate TTS file: {e}")
             return None
+
+
+
+class KOKOROTTS(AbstractTTS):
+    def __init__(self, config):
+        from kokoro import KPipeline
+        self.output_file = config.get("output_file", ".")
+        self.lang = config.get("lang", "z")
+        self.pipeline = KPipeline(lang_code=self.lang)  # <= make sure lang_code matches voice
+        self.voice = config.get("voice", "zm_yunyang")
+
+    def _generate_filename(self, extension=".wav"):
+        return os.path.join(self.output_file, f"tts-{datetime.now().date()}@{uuid.uuid4().hex}{extension}")
+
+    def _log_execution_time(self, start_time):
+        end_time = time.time()
+        execution_time = end_time - start_time
+        logger.debug(f"Execution Time: {execution_time:.2f} seconds")
+
+    def to_tts(self, text):
+        tmpfile = self._generate_filename(".wav")
+        start_time = time.time()
+        try:
+            generator = self.pipeline(
+                text, voice=self.voice,  # <= change voice here
+                speed=1, split_pattern=r'\n+'
+            )
+            for i, (gs, ps, audio) in enumerate(generator):
+                logger.debug(f"KOKOROTTS: i: {i}, gs：{gs}, ps：{ps}")  # i => index
+                sf.write(tmpfile, audio, 24000)  # save each audio file
+            self._log_execution_time(start_time)
+            return tmpfile
+        except Exception as e:
+            logger.error(f"Failed to generate TTS file: {e}")
+            return None
+
 
 
 def create_instance(class_name, *args, **kwargs):

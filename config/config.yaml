@@ -54,6 +54,10 @@ TTS:
     output_file: tmp/
   CHATTTS:
     output_file: tmp/
+  KOKOROTTS:
+    output_file: tmp/
+    lang: z
+    voice: zm_yunyang
 
 Player:
   PygameSoundPlayer: null

@@ -53,7 +53,7 @@ class Rag:
 
         #embeddings = embedding_model.embed_documents([doc.content for doc in documents])
         #vector_store = FAISS.from_embeddings(documents=splits, embedding=embeddings)
-        vector_store = Chroma.from_decuments(documents=splits, embedding=embedding_model)
+        vector_store = Chroma.from_documents(documents=splits, embedding=embedding_model)
         retriever = vector_store.as_retriever()
 
         def format_docs(docs):
