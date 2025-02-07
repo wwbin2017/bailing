@@ -21,7 +21,7 @@
 - **ASR**: 使用 [FunASR](https://github.com/modelscope/FunASR) 进行自动语音识别，将用户的语音转换为文本。
 - **VAD**: 使用 [silero-vad](https://github.com/snakers4/silero-vad) 进行语音活动检测，以确保只处理有效的语音片段。
 - **LLM**: 使用 [deepseek](https://github.com/deepseek-ai/DeepSeek-LLM) 作为大语言模型来处理用户输入并生成响应，极具性价比。
-- **TTS**: 使用 [edge-tts](https://github.com/rany2/edge-tts) [ChatTTS](https://github.com/2noise/ChatTTS) MacOS say进行文本到语音的转换，将生成的文本响应转换为自然流畅的语音。
+- **TTS**: 使用 [edge-tts](https://github.com/rany2/edge-tts) [Kokoro-82M](https://huggingface.co/hexgrad/Kokoro-82M) [ChatTTS](https://github.com/2noise/ChatTTS) MacOS say进行文本到语音的转换，将生成的文本响应转换为自然流畅的语音。
 
 
 ## 框架说明
@@ -49,7 +49,7 @@ Robot 负责高效的任务管理与记忆管理，能够智能地处理用户�
 - **语音输入**：通过 FunASR 进行准确的语音识别。
 - **语音活动检测**：使用 silero-vad 过滤无效音频，提升识别效率。
 - **智能对话生成**：依靠 deepseek 提供的强大语言理解能力生成自然的文本回复，极具性价比。
-- **语音输出**：通过 edge-tts 将文本转为语音，为用户提供逼真的听觉反馈。
+- **语音输出**：通过 edge-tts Kokoro-82M 将文本转为语音，为用户提供逼真的听觉反馈。
 - **支持打断**：灵活配置打断策略，能够识别关键字和语音打断，确保用户在对话中的即时反馈与控制，提高交互流畅度。
 - **支持记忆功能**: 具备持续学习能力，能够记忆用户的偏好与历史对话，提供个性化的互动体验。
 - **支持工具调用**: 灵活集成外部工具，用户可通过语音直接请求信息或执行操作，提升助手的实用性。
@@ -69,7 +69,7 @@ Robot 负责高效的任务管理与记忆管理，能够智能地处理用户�
 
 - Python 3.8 或更高版本
 - `pip` 包管理器
-- FunASR、silero-vad、deepseek、edge-tts 所需的依赖库
+- FunASR、silero-vad、deepseek、edge-tts Kokoro-82M 所需的依赖库
 
 ### 安装步骤
 
@@ -109,7 +109,7 @@ Robot 负责高效的任务管理与记忆管理，能够智能地处理用户�
 2. 通过 FunASR 将用户语音转为文本。
 3. silero-vad 进行语音活动检测，确保只处理有效语音。
 4. deepseek 处理文本输入，并生成智能回复。
-5. edge-tts, ChatTTS, MacOs say 将生成的文本转换为语音，并播放给用户。
+5. edge-tts, Kokoro-82M, ChatTTS, MacOs say 将生成的文本转换为语音，并播放给用户。
 
 
 ## Roadmap
