@@ -13,7 +13,6 @@ silero_vad==5.1
 torch==2.4.1
 torchaudio==2.4.1
 Flask-SocketIO~=5.3.7
-requests~=2.32.3
 schedule==1.2.2
 requests==2.32.2
 beautifulsoup4==4.12.2
