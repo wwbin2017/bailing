@@ -39,6 +39,8 @@ Robot 负责高效的任务管理与记忆管理，能够智能地处理用户�
 
 ## Demo
 
+![Demo](assets/example.png)
+
 [bailing audio dialogue](https://www.zhihu.com/zvideo/1818998325594177537)
 
 [bailing audio dialogue](https://www.zhihu.com/zvideo/1818994917940260865)
