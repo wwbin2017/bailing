@@ -19,7 +19,7 @@
         <img alt="GitHub stars" src="https://img.shields.io/github/stars/wwbin2017/bailing?color=ccf" />
       </a>
       <br>
-      <em>Open-source / Efficient / Lightweight / Easy-to-use</em>
+      <em>Open-source / Efficient / Lightweight </em>
     </p>
 </div>
 <hr>
@@ -27,8 +27,6 @@
 # Bailing
 
 **Bailing** is an open-source voice assistant designed to engage in natural conversations with users via voice. The project combines Automatic Speech Recognition (ASR), Voice Activity Detection (VAD), Large Language Models (LLM), and Text-to-Speech (TTS) technologies. It is a voice-based conversational bot similar to GPT-4o, powered by ASR + LLM + TTS, delivering a high-quality voice interaction experience with an end-to-end latency of 800ms. Bailing aims to achieve GPT-4-like conversation quality without requiring a GPU, making it suitable for various edge devices and low-resource environments.
-
-![logo](assets/logo.png)
 
 ## Features
 
