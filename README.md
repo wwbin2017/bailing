@@ -8,22 +8,21 @@
 
 ## 项目特点
 
-- **高效开源模型**：百聆使用了多个开源模型，确保高效、可靠的语音对话体验。
-- **无需GPU**：通过优化，可本地部署，仍能提供类GPT-4的性能表现。
-- **模块化设计**：ASR、VAD、LLM和TTS模块相互独立，可以根据需求进行替换和升级。
-- **支持记忆功能**: 具备持续学习能力，能够记忆用户的偏好与历史对话，提供个性化的互动体验。
-- **支持工具调用**: 灵活集成外部工具，用户可通过语音直接请求信息或执行操作，提升助手的实用性。
-- **支持任务管理**: 高效管理用户任务，能够跟踪进度、设置提醒，并提供动态更新，确保用户不错过任何重要事项。
-
+- 🚀 **流畅对话体验**：低延迟、不卡顿，几乎像真人对话一样自然，百聆使用了多个开源模型，确保高效、可靠的语音对话体验。
+- 🖥 **轻量级部署**：无需高端硬件，甚至不需要 GPU，通过优化，可本地部署，仍能提供类GPT-4的性能表现。
+- 🔧 **模块化设计**：ASR、VAD、LLM和TTS模块相互独立，可以根据需求进行替换和升级。
+- 🧠 **智能记忆功能**：具备持续学习能力，能够记忆用户的偏好与历史对话，提供个性化的互动体验。
+- 🛠 **工具调用能力**：灵活集成外部工具，用户可通过语音直接请求信息或执行操作，提升助手的实用性。  
+- 📅 **任务管理**：高效管理用户任务，能够跟踪进度、设置提醒，并提供动态更新，确保用户不错过任何重要事项。 
 
 ## 项目简介
 
 百聆通过以下技术组件实现语音对话功能：
 
-- **ASR**: 使用 [FunASR](https://github.com/modelscope/FunASR) 进行自动语音识别，将用户的语音转换为文本。
-- **VAD**: 使用 [silero-vad](https://github.com/snakers4/silero-vad) 进行语音活动检测，以确保只处理有效的语音片段。
-- **LLM**: 使用 [deepseek](https://github.com/deepseek-ai/DeepSeek-LLM) 作为大语言模型来处理用户输入并生成响应，极具性价比。
-- **TTS**: 使用 [edge-tts](https://github.com/rany2/edge-tts) [Kokoro-82M](https://huggingface.co/hexgrad/Kokoro-82M) [ChatTTS](https://github.com/2noise/ChatTTS) MacOS say进行文本到语音的转换，将生成的文本响应转换为自然流畅的语音。
+- 🎙 **ASR**: 使用 [FunASR](https://github.com/modelscope/FunASR) 进行自动语音识别，将用户的语音转换为文本。
+- 🎚 **VAD**: 使用 [silero-vad](https://github.com/snakers4/silero-vad) 进行语音活动检测，以确保只处理有效的语音片段。
+- 🧠 **LLM**: 使用 [deepseek](https://github.com/deepseek-ai/DeepSeek-LLM) 作为大语言模型来处理用户输入并生成响应，极具性价比。
+- 🔊 **TTS**: 使用 [edge-tts](https://github.com/rany2/edge-tts) [Kokoro-82M](https://huggingface.co/hexgrad/Kokoro-82M) [ChatTTS](https://github.com/2noise/ChatTTS) MacOS say进行文本到语音的转换，将生成的文本响应转换为自然流畅的语音。
 
 
 ## 框架说明
@@ -141,7 +140,16 @@ Robot 负责高效的任务管理与记忆管理，能够智能地处理用户�
 | `web_search`          | 在网上搜索指定的关键词                        | 根据用户提供的搜索内容，返回相应的搜索结果                 | 用户说：“搜索最新的科技新闻。” → `query: '最新的科技新闻'`    |
 
 
+## 开源社区感谢
+百聆的诞生，离不开开源社区的无私贡献。
 
+感谢 DeepSeek、FunASR、Silero-VAD、ChatTTS、OpenManus 等优秀的开源项目，
+让我们有机会打造一个真正 开放、强大、低门槛 的语音 AI 助手！
+
+如果你也认同 让 AI 触手可及 的理念，欢迎一起贡献代码、优化模型，
+让百聆更强、更智能，成为真正的 JARVIS！
+
+📢 欢迎 Star & PR
 
 ## 贡献指南
 
