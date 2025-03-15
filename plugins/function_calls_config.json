@@ -99,19 +99,17 @@
     {
         "type": "function",
         "function": {
-            "name": "web_search",
-            "description": "在网上搜索指定的关键词，用户应提供搜索内容。\n比如用户说搜索'最新的科技新闻'，参数为：query: '最新的科技新闻'。",
+            "name": "aigc_manus",
+            "description": "该函数可以做任何你想做的事情，如果不知道调用那个工具，可以默认调用该工具，调用 Manus AI Agent 执行复杂任务，用户应提供任务描述和所需的参数。Manus 能够独立思考、规划并执行复杂任务，直接交付完整成果。例如：\n- **研究任务**：深入研究特定主题，撰写报告或文章。\n- **数据分析**：分析市场趋势、股票表现等数据，并提供见解。\n- **内容创作**：生成高质量的文章、PPT 等内容。\n- **任务自动化**：自动执行重复性任务，如筛选简历、处理文件等。",
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "query": {
+                    "task_description": {
                         "type": "string",
-                        "description": "搜索关键词，比如'最新的科技新闻'、'Python编程教程'等。"
+                        "description": "要执行的任务描述，例如'撰写一篇关于人工智能发展的文章'、'分析特定股票的市场趋势'等。"
                     }
                 },
-                "required": [
-                    "query"
-                ]
+                "required": ["task_description"]
             }
         }
     },

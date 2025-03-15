@@ -27,9 +27,12 @@ def auto_import_modules(package_name):
     # 遍历包内的所有模块
     for _, module_name, _ in pkgutil.iter_modules(package_path):
         # 导入模块
-        full_module_name = f"{package_name}.{module_name}"
-        importlib.import_module(full_module_name)
-        logger.info(f"模块 '{full_module_name}' 已加载")
+        try:
+            full_module_name = f"{package_name}.{module_name}"
+            importlib.import_module(full_module_name)
+            logger.info(f"模块 '{full_module_name}' 已加载")
+        except Exception as e:
+            logger.error(f"模块 '{full_module_name}' 加载失败")
 
 # 自动导入 'functions' 包中的所有模块
 auto_import_modules('plugins.functions')
@@ -38,6 +41,9 @@ auto_import_modules('plugins.functions')
 class TaskManager:
     def __init__(self, config, result_queue: queue.Queue):
         self.functions = read_json_file(config.get("functions_call_name"))
+        aigc_manus_enabled = config.get("aigc_manus_enabled", "false")
+        if not aigc_manus_enabled:
+            self.functions = [item for item in self.functions if item["function"]["name"] != 'aigc_manus']
         self.task_queue = queue.Queue()
         # 初始化线程池
         self.task_executor = ThreadPoolExecutor(max_workers=10)
