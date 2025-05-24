@@ -36,9 +36,9 @@ VAD:
 
 LLM:
   OpenAILLM:
-    model_name: deepseek-chat
-    url: https://api.deepseek.com
-    api_key:
+    model_name: llama3.2:latest
+    url: http://localhost:11434
+    api_key: ollama
 
 TTS:
   MacTTS:
@@ -68,16 +68,16 @@ Player:
 Rag:
   doc_path: documents/
   emb_model: models/bge-small-zh
-  model_name: deepseek-chat
-  url: https://api.deepseek.com
-  api_key: null
+  model_name: qwen3:latest
+  url: http://localhost:11434
+  api_key: ollama
 
 Memory:
   dialogue_history_path: tmp/
   memory_file: tmp/memory.json
-  model_name: deepseek-chat
-  url: https://api.deepseek.com
-  api_key: null
+  model_name: qwen3:latest
+  url: http://localhost:11434
+  api_key: ollama
 
 TaskManager:
   functions_call_name: plugins/function_calls_config.json
