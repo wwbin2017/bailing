@@ -9,7 +9,7 @@ WakeWord: 百聆
 
 interrupt: false
 # 是否开启工具调用
-StartTaskMode: true
+StartTaskMode: false
 # 具体处理时选择的模块
 selected_module:
   Recorder: RecorderPyAudio
