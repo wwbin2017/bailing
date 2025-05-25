@@ -1,7 +1,6 @@
 import json
-from abc import ABC, abstractmethod
-import openai
 import logging
+from abc import ABC, abstractmethod
 import requests
 
 logger = logging.getLogger(__name__)

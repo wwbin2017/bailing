@@ -8,7 +8,8 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
 # Update import path
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.chat_models import ChatOllama as Ollama
+# Update import for ChatOllama
+from langchain_ollama import ChatOllama as Ollama
 
 prompt_template = """请根据以下上下文回答最后的问题。如果你不知道答案，请直接说不知道，切勿编造答案。回答应简洁明了，最多使用三句话，确保直接针对问题，并鼓励提问者提出更多问题。
 
@@ -32,7 +33,7 @@ class Rag:
         self.emb_model = config.get("emb_model")
         self.template = prompt_template
         self.custom_rag_prompt = PromptTemplate.from_template(self.template)
-        # Replace ChatOpenAI with Ollama
+        # Replace ChatOpenAI with updated ChatOllama
         self.llm = Ollama(
             model=config.get("model_name"),
             base_url=config.get("base_url", "http://localhost:11434"),  # Default Ollama service address
