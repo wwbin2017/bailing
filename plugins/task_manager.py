@@ -41,7 +41,7 @@ auto_import_modules('plugins.functions')
 class TaskManager:
     def __init__(self, config, result_queue: queue.Queue):
         self.functions = read_json_file(config.get("functions_call_name"))
-        aigc_manus_enabled = config.get("aigc_manus_enabled", "false")
+        aigc_manus_enabled = config.get("aigc_manus_enabled", False)
         if not aigc_manus_enabled:
             self.functions = [item for item in self.functions if item["function"]["name"] != 'aigc_manus']
         self.task_queue = queue.Queue()
@@ -103,20 +103,20 @@ class TaskManager:
             return ActionResponse(action=Action.NONE, result=None, response=None)
         elif func.action == ToolType.WAIT: # = (2, "调用工具，等待函数返回")
             result = self.call_function( func_name, **func_args)
-            return result
+            return ActionResponse(action=Action.RESPONSE, result=result, response=None)
         elif func.action == ToolType.SCHEDULER: # = (3, "定时任务，时间到了之后，直接回复")
             result = self.call_function(func_name, **func_args)
-            return result
+            return ActionResponse(action=Action.RESPONSE, result=result, response=None)
         elif func.action == ToolType.TIME_CONSUMING: #  = (4, "耗时任务，需要一定时间，后台运行有结果后再回复")
             future = self.task_executor.submit(self.call_function, func_name, **func_args)
             self.task_queue.put(future)
             return ActionResponse(action=Action.RESPONSE, result=None, response="您好，正在查询信息中，一会查询完我会告诉你哟")
         elif func.action == ToolType.ADD_SYS_PROMPT: #  = (5, "增加系统指定到对话历史中去")
             result = self.call_function(func_name, **func_args)
-            return result
+            return ActionResponse(action=Action.ADDSYSTEMSPEAK, result=result, response=None)
         else:
             result = self.call_function(func_name, **func_args)
-            return result
+            return ActionResponse(action=Action.RESPONSE, result=result, response=None)
 
 if __name__ == "__main__":
     pass

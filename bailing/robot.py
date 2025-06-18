@@ -102,7 +102,7 @@ class Robot(ABC):
         self.speech = []
 
         # 初始化单例
-        rag.Rag(config["Rag"])  # 第一次初始化
+        #rag.Rag(config["Rag"])  # 第一次初始化
 
         self.task_queue = queue.Queue()
         self.task_manager = TaskManager(config.get("TaskManager"), self.task_queue)

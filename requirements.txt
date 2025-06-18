@@ -20,11 +20,11 @@ pygame==2.6.1
 sounddevice==0.5.0
 soundfile==0.12.1
 playsound==1.3.0
-langchain==0.3.2
-langchain_chroma==0.1.4
-langchain-community==0.3.1
-langchain-core==0.3.8
-langchain-openai==0.2.1
-langchain-text-splitters==0.3.0
+#langchain==0.3.2
+#langchain_chroma==0.1.4
+#langchain-community==0.3.1
+#langchain-core==0.3.8
+#langchain-openai==0.2.1
+#langchain-text-splitters==0.3.0
 kokoro>=0.7.4
 
