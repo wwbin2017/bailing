@@ -5,11 +5,13 @@ import subprocess
 import threading
 import wave
 import pyaudio
+import json
 from pydub import  AudioSegment
 import pygame
 import sounddevice as sd
 import numpy as np
 from playsound import playsound
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 
 
 logger = logging.getLogger(__name__)
@@ -210,6 +212,58 @@ class PlaysoundPlayer(AbstractPlayer):
     def stop(self):
         super().stop()
         # playsound does not provide a stop method
+
+
+class WebSocketPlayer(AbstractPlayer):
+    """通过WebSocket发送音频到前端"""
+
+    def __init__(self, *args, **kwargs):
+        super(WebSocketPlayer, self).__init__(*args, **kwargs)
+        self.websocket = None
+        self.playing_status = False
+
+    def init(self, websocket: WebSocket):
+        self.websocket = websocket
+
+    def get_playing_status(self):
+        """正在播放和队列非空，为正在播放状态"""
+        return self.play_status
+
+    def set_playing_status(self, status):
+        """正在播放和队列非空，为正在播放状态"""
+        self.playing_status = status
+
+    def do_playing(self, audio_file):
+        try:
+            with open(audio_file, "rb") as f:
+                wav_data = f.read()
+            self.websocket.send_bytes(wav_data)
+        except Exception as e:
+            logger.error(f"播放音频失败: {e}")
+
+    def interrupt(self):
+        """异步发送音频任务"""
+        try:
+            await self.websocket.send_text(json.dumps({"command": "interrupt"}))
+        except Exception as e:
+            logger.error(f"发送音频错误: {e}")
+
+    def send_messages(self, messages):
+        data = {
+            "type": "dialogue_history",
+            "dialogue": messages
+        }
+        try:
+            await self.websocket.send_text(json.dumps(data))
+        except Exception as e:
+            logger.error(f"发送音频错误: {e}")
+
+    def stop(self):
+        """异步发送音频任务"""
+        try:
+            await self.websocket.send_text(json.dumps({"command": "interrupt"}))
+        except Exception as e:
+            logger.error(f"发送音频错误: {e}")
 
 
 def create_instance(class_name, *args, **kwargs):

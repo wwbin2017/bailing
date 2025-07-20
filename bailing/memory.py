@@ -3,28 +3,12 @@ import os
 import glob
 import logging
 import re
-
 import openai
 
 from bailing.utils import read_json_file, write_json_file
+from bailing.prompt import memory_prompt_template
 
 logger = logging.getLogger(__name__)
-
-memory_prompt_template = """
-你是一个对话记录员，负责提取和记录用户与助手之间的对话信息。请根据以下内容生成最新、最完整的对话摘要，突出与用户相关的有用信息，并确保摘要不超过800个字。历史对话摘要包含了之前记录的对话摘要，涉及用户的需求、偏好和关键问题。最近一次对话历史是最近的对话记录，包含用户和助手之间的具体交流内容。
-
-# 历史对话摘要
-${dialogue_abstract}
-
-# 最近一次对话历史
-${dialogue_history}
-
-# 输出要求
-- 综合历史对话摘要和最近的对话历史，形成一个结构化的对话摘要，需要考虑用户对话风格。
-- 确保提取的信息具有实际价值，并能帮助理解用户的需求和背景。
-- 摘要应清晰、简洁，便于后续参考和分析。
-- 输出对话摘要，用户对话偏好，用户对话风格，以及下次应该采取的对话策略
-"""
 
 class Memory:
     def __init__(self, config):

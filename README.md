@@ -54,10 +54,6 @@ Robot 负责高效的任务管理与记忆管理，能够智能地处理用户�
 
 ![Demo](assets/example.png)
 
-[bailing audio dialogue](https://www.zhihu.com/zvideo/1818998325594177537)
-
-[bailing audio dialogue](https://www.zhihu.com/zvideo/1818994917940260865)
-
 
 ## 功能特性
 
@@ -111,6 +107,7 @@ Robot 负责高效的任务管理与记忆管理，能够智能地处理用户�
        - /third_party/OpenManus/config/config.toml  需要配置里面的 model、base_url、api_key 
 4. 运行项目：
 
+   4.1 本地运行
     ```bash 
     cd server
     python server.py # 启动后端服务，也可不执行这一步
@@ -119,6 +116,12 @@ Robot 负责高效的任务管理与记忆管理，能够智能地处理用户�
     ```bash
     python main.py
     ```
+   
+   4.2 服务器运行
+    ```
+   python server.py # 不需要cd server
+   ```
+   打开浏览器 http://localhost:8000 点击开始按钮，进行语音对话
 
 ## 使用说明
 
@@ -138,7 +141,7 @@ Robot 负责高效的任务管理与记忆管理，能够智能地处理用户�
 - [x] Memory
 - [ ] 支持语音唤醒
 - [ ] 强化WebSearch
-- [ ] 支持WebRTC
+- [x] 支持WebRTC/WebSocket
 
 未来，百聆将升华为一款类JARVIS个人助手，仿佛一位贴心的智囊，具备无与伦比的记忆力与前瞻性的任务管理能力。依托于尖端的RAG与Agent技术，它将精确掌控您的事务与知识，化繁为简。只需轻声一语，例如“帮我查找最近新闻”或“总结大模型的最新进展”，百聆便会迅速响应，智能分析，实时跟踪，并将成果优雅地呈现给您。想象一下，您拥有的不仅是一名助手，而是一个深谙您需求的智慧伙伴，伴您在未来的每个重要瞬间，助您洞察万象，决胜千里。
 

@@ -15,31 +15,20 @@ from bailing import (
     llm,
     tts,
     vad,
-    memory,
-    rag
+    memory
 )
 from bailing.dialogue import Message, Dialogue
 from bailing.utils import is_interrupt, read_config, is_segment, extract_json_from_string
+from bailing.prompt import sys_prompt
+
 from plugins.registry import Action
 from plugins.task_manager import TaskManager
 
 logger = logging.getLogger(__name__)
 
-# 由于deepseek工具调用不太准，经常会输出到content，所以显示指明参数
-sys_prompt = """
-# 角色定义
-你是百聆，由寒江雪开发。你性格开朗、活泼，善于交流。你的回复应该简短、友好、口语化强一些，回复禁止出现表情符号。
-
-#以下是历史对话摘要:
-{memory}
-
-# 回复要求
-1. 你的回复应该简短、友好、口语化强一些，回复禁止出现表情符号。
-2. 如果需要调用工具，先不要回答，调用工具后再回答，直接输出工具名和参数，输出格式```json\n{"function_name":"", "args":{}}```
-"""
 
 class Robot(ABC):
-    def __init__(self, config_file):
+    def __init__(self, config_file, websocket = None):
         config = read_config(config_file)
         self.audio_queue = queue.Queue()
 
@@ -68,10 +57,13 @@ class Robot(ABC):
             config["VAD"][config["selected_module"]["VAD"]]
         )
 
+
         self.player = player.create_instance(
             config["selected_module"]["Player"],
             config["Player"][config["selected_module"]["Player"]]
         )
+        if config["selected_module"]["Player"].lower().find("websocket") > -1:
+            self.player.init(websocket)
 
         self.memory = memory.Memory(config.get("Memory"))
         self.prompt = sys_prompt.replace("{memory}", self.memory.get_memory()).strip()

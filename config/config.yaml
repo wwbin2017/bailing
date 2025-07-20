@@ -39,6 +39,11 @@ LLM:
     model_name: deepseek-chat
     url: https://api.deepseek.com
     api_key:
+  OllamaLLM:
+    model_name: qwen-chat
+    url: http://localhost:11434/api/chat # 注意后缀是api/chat
+    api_key:
+
 
 TTS:
   MacTTS:

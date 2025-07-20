@@ -4,6 +4,7 @@ import threading
 import queue
 import logging
 import pyaudio
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 
 logger = logging.getLogger(__name__)
 
@@ -74,6 +75,28 @@ class RecorderPyAudio(AbstractRecorder):
     def __del__(self):
         # Ensure resources are cleaned up on object deletion
         self.stop_recording()
+
+
+
+class WebSocketRecorder(AbstractRecorder):
+    """通过WebSocket接收前端音频"""
+
+    def __init__(self, config):
+        self.running = True
+        self.audio_queue = None
+
+    def start_recording(self, audio_queue: queue.Queue):
+        self.audio_queue = audio_queue
+
+    def put_audio(self, data):
+        if self.running:
+            self.audio_queue.put(data)
+        else:
+            logger.info(f"当前已暂停录音: {self.running}")
+
+    def stop_recording(self):
+        self.running = False
+
 
 
 def create_instance(class_name, *args, **kwargs):

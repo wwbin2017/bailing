@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
 import openai
+import requests
+import json
 import logging
-
 
 logger = logging.getLogger(__name__)
 
@@ -46,6 +47,56 @@ class OpenAILLM(LLM):
                 #yield chunk.choices[0].delta.get("content", "")
         except Exception as e:
             logger.error(f"Error in response generation: {e}")
+
+
+class OllamaLLM(LLM):
+    def __init__(self, config):
+        self.model_name = config.get("model_name", "qwen2.5")
+        self.base_url = config.get("url", "http://localhost:11434/api/chat")
+
+    def response(self, dialogue):
+        payload = {
+            "model": self.model_name,
+            "messages": dialogue,
+            "stream": True
+        }
+        try:
+            resp = requests.post(self.base_url, json=payload, stream=True)
+            resp.raise_for_status()
+            for line in resp.iter_lines():
+                if not line:
+                    continue
+                data = json.loads(line.decode())
+                content = data.get("message", {}).get("content")
+                if content:
+                    yield content
+        except Exception as e:
+            logger.error(f"OllamaLLM stream error: {e}")
+
+    def response_call(self, dialogue, tools):
+        """
+        支持流式工具调用：
+        tools: list of tool definitions, e.g. [{"type":"function","function":{...}}, ...]
+        """
+        payload = {
+            "model": self.model_name,
+            "messages": dialogue,
+            "stream": True,
+            "tools": tools
+        }
+        try:
+            resp = requests.post(self.base_url, json=payload, stream=True)
+            resp.raise_for_status()
+            for line in resp.iter_lines():
+                if not line:
+                    continue
+                data = json.loads(line.decode())
+                msg = data.get("message", {})
+                content = msg.get("content")
+                tool_calls = msg.get("tool_calls")
+                yield content, tool_calls
+        except Exception as e:
+            logger.error(f"OllamaLLM tool-call error: {e}")
 
 
 def create_instance(class_name, *args, **kwargs):
