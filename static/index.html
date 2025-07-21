@@ -590,7 +590,6 @@
     </style>
 </head>
 <body>
-    <!-- 科技感背景 -->
     <div class="tech-bg">
         <div class="grid-line"></div>
     </div>
@@ -617,7 +616,7 @@
                 <i class="fas fa-stop-circle"></i> 停止
             </button>
             <button id="interruptBtn" class="control-btn interrupt" disabled>
-                <i class="fas fa-hand-paper"></i> 模拟打断
+                <i class="fas fa-hand-paper"></i> 打断
             </button>
         </div>
 
@@ -673,7 +672,7 @@
 
         const userId = getUserId();
         console.log("Your user_id is", userId);
-<!--        // DOM元素-->
+        // DOM元素
         const startBtn = document.getElementById('startBtn');
         const stopBtn = document.getElementById('stopBtn');
         const interruptBtn = document.getElementById('interruptBtn');
@@ -683,10 +682,10 @@
         const logContainer = document.getElementById('logContainer');
         const logContent = document.getElementById('logContent');
 
-<!--        // 状态管理-->
-<!--        let websocket = null;-->
-<!--        let player = null;-->
-<!--        let recorder = null;-->
+        // 状态管理
+        let websocket = null;
+        let player = null;
+        let recorder = null;
         let connectionStatus = 'disconnected';
         let logsVisible = false;
 
@@ -733,7 +732,7 @@
                 // 角色标签文本
                 const roleText = {
                     'user': '用户',
-                    'bot': '百聆',
+                    'assistant': '百聆',
                     'admin': '管理员',
                     'system': '系统'
                 }[message.role] || message.role;
@@ -820,11 +819,15 @@
                 const duration = audioBuffer.duration.toFixed(1);
                 this.addLog(`开始播放 (时长: ${duration}秒)`);
                 this.updateStatus(`播放中 (剩余: ${this.audioQueue.length + 1}段)`, 'playing');
-                this.sendPlaybackStatus('playing', this.audioQueue.length + 1);
+                this.sendPlaybackStatus('playing', this.audioQueue.length);
                 source.onended = () => {
                     this.addLog("播放完成");
-
-                    if (this.audioQueue.length > 0 && !this.shouldInterrupt) {
+                    if (this.shouldInterrupt){
+                        this.sendPlaybackStatus('interrupted', this.audioQueue.length);
+                    } else {
+                        this.sendPlaybackStatus('completed', this.audioQueue.length);
+                    }
+                    if (this.audioQueue.length > 0) {
                         this.playNext();
                     } else {
                         this.isPlaying = false;
@@ -1015,17 +1018,19 @@
                 };
 
                 websocket.onmessage = async (event) => {
-                addLog("收到对话数据"+event.data);
+                    // addLog("收到对话数据"+event.data);
                     if (typeof event.data === 'string') {
-                    addLog("收到对话数据"+event.data);
+                        // addLog("收到对话数据"+event.data);
                         const message = JSON.parse(event.data);
-                        if (message.command === 'interrupt') {
+                        if (message.type === 'interrupt') {
                             player.interrupt();
                             updateStatus("收到打断指令", "disconnected");
                             addLog("收到服务器打断指令"+event.data);
-                        } else {
+                        } else if (message.type == 'update_dialogue') {
                             addLog("收到对话数据"+event.data);
-                            updateDialogue(message)
+                            updateDialogue(message.data)
+                        } else {
+                            addLog("收到未知指令数据："+event.data);
                         }
                     } else {
                         const audioData = event.data; // ArrayBuffer

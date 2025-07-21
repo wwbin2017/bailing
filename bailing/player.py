@@ -227,7 +227,7 @@ class WebSocketPlayer(AbstractPlayer):
 
     def get_playing_status(self):
         """正在播放和队列非空，为正在播放状态"""
-        return self.play_status
+        return self.playing_status
 
     def set_playing_status(self, status):
         """正在播放和队列非空，为正在播放状态"""
@@ -250,8 +250,8 @@ class WebSocketPlayer(AbstractPlayer):
 
     def send_messages(self, messages):
         data = {
-            "type": "dialogue_history",
-            "dialogue": messages
+            "type": "update_dialogue",
+            "dialogue": messages if isinstance(messages, list) else [messages]
         }
         try:
             await self.websocket.send_text(json.dumps(data))
@@ -261,7 +261,7 @@ class WebSocketPlayer(AbstractPlayer):
     def stop(self):
         """异步发送音频任务"""
         try:
-            await self.websocket.send_text(json.dumps({"command": "interrupt"}))
+            await self.websocket.send_text(json.dumps({"type": "interrupt"}))
         except Exception as e:
             logger.error(f"发送音频错误: {e}")
 

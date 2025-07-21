@@ -95,10 +95,25 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str = Query(...)):
             msg = await websocket.receive()
             if "bytes" in msg:
                 robot_instance.recorder.put_audio(msg["bytes"])
-            elif "text" in msg:
-                status = json.loads(msg["text"]).get("status")
-                logger.info(f"[Client] status: {status}")
-                robot_instance.player.set_playing_status(status)
+            elif "type" in msg:
+                # {
+                #     type: "playback_status",
+                #     status: status, // e.g., 'playing', 'stopped', 'interrupted'
+                #      queue_size: queueSize,
+                #       timestamp: new
+                #       Date().toISOString()
+                # };
+                msg_js = json.loads(msg) #["text"]).get("status")
+                if msg_js["type"] == "playback_status":
+                    # 播放中
+                    if msg_js["status"]== "playing" or msg_js["queue_size"]>0:
+                        logger.info(f"[Client] status: {msg}")
+                        robot_instance.player.set_playing_status(True)
+                    else: # 未播放
+                        robot_instance.player.set_playing_status(False)
+                else:
+                    logger.warn(f"未知指令：{msg}")
+            active_robots[user_id][1] = time.time()
 
     except WebSocketDisconnect:
         logger.info("客户端断开连接")
