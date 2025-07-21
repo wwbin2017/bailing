@@ -251,7 +251,7 @@ class WebSocketPlayer(AbstractPlayer):
     def send_messages(self, messages):
         data = {
             "type": "update_dialogue",
-            "dialogue": messages if isinstance(messages, list) else [messages]
+            "data": messages if isinstance(messages, list) else [messages]
         }
         try:
             await self.websocket.send_text(json.dumps(data))
