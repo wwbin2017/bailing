@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 
 
 class Robot(ABC):
-    def __init__(self, config_file, websocket = None):
+    def __init__(self, config_file, websocket = None, loop = None):
         config = read_config(config_file)
         self.audio_queue = queue.Queue()
 
@@ -100,6 +100,10 @@ class Robot(ABC):
         self.task_queue = queue.Queue()
         self.task_manager = TaskManager(config.get("TaskManager"), self.task_queue)
         self.start_task_mode = config.get("StartTaskMode")
+
+        if config["selected_module"]["Player"].lower().find("websocket") > -1:
+            self.player.init(websocket, loop)
+            self.listen_dialogue(self.player.send_messages)
 
     def listen_dialogue(self, callback):
         self.callback = callback

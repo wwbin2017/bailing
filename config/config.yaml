@@ -7,25 +7,28 @@ logging:
 # 唤醒词
 WakeWord: 百聆
 
-interrupt: false
+interrupt: true
 # 是否开启工具调用
 StartTaskMode: true
 # 具体处理时选择的模块
 selected_module:
-  Recorder: RecorderPyAudio
+  Recorder: WebSocketRecorder
   ASR: FunASR
   VAD: SileroVAD
   LLM: OpenAILLM
-  TTS: EdgeTTS
-  Player: PygameSoundPlayer
+  TTS: KOKOROTTS
+  Player: WebSocketPlayer
 
 Recorder:
   RecorderPyAudio:
     output_file: tmp/
+  WebSocketRecorder:
+    output_file: tmp/
+
 
 ASR:
   FunASR:
-    model_dir: models/SenseVoiceSmall
+    model_dir: FunAudioLLM/SenseVoiceSmall
     output_file: tmp/
 
 VAD:
@@ -69,6 +72,7 @@ Player:
   PygamePlayer: null
   CmdPlayer: null
   PyaudioPlayer: null
+  WebSocketPlayer: null
 
 Rag:
   doc_path: documents/

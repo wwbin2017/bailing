@@ -77,25 +77,47 @@ class RecorderPyAudio(AbstractRecorder):
         self.stop_recording()
 
 
-
 class WebSocketRecorder(AbstractRecorder):
-    """通过WebSocket接收前端音频"""
+    """通过WebSocket接收前端音频，并进行后端分帧处理"""
 
     def __init__(self, config):
         self.running = True
-        self.audio_queue = None
+        self.audio_queue: queue.Queue = None
+        self._buffer = bytearray()
+        self._frame_size_bytes = 512 * 2  # 512 samples × 2 bytes/sample for 16kHz Int16 PCM
 
     def start_recording(self, audio_queue: queue.Queue):
         self.audio_queue = audio_queue
+        self.running = True
 
-    def put_audio(self, data):
-        if self.running:
-            self.audio_queue.put(data)
-        else:
-            logger.info(f"当前已暂停录音: {self.running}")
+    def put_audio(self, data: bytes):
+        """接收原始 PCM 数据，将其缓冲并分帧后存入 audio_queue"""
+        if not self.running:
+            logger.info(f"录音已暂停，丢弃数据")
+            return
+        # 累积数据
+        self._buffer.extend(data)
+
+        # 按 512 样本（1024 字节）分片
+        while len(self._buffer) >= self._frame_size_bytes:
+            chunk = bytes(self._buffer[:self._frame_size_bytes])
+            # 放入队列
+            try:
+                self.audio_queue.put(chunk, block=False)
+            except queue.Full:
+                logger.warning("audio_queue 已满，丢弃一帧音频")
+            # 移除已用数据
+            del self._buffer[:self._frame_size_bytes]
 
     def stop_recording(self):
+        """停止录音，并将缓冲区剩余数据清理"""
         self.running = False
+        if hasattr(self, '_buffer'):
+            if self._buffer:
+                logger.info(f"剩余缓冲数据未满一帧：{len(self._buffer)} 字节，将被丢弃")
+            self._buffer.clear()
+        logger.info("录音已停止")
+
 
 
 

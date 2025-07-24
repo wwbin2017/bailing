@@ -12,6 +12,7 @@ assets/*.mov
 tmp/
 asset/
 models/SenseVoice*
+plugins/functions/web_search_v1.py
 
 # Distribution / packaging
 .Python
