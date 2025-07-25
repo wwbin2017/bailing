@@ -701,8 +701,8 @@
             const entry = document.createElement('div');
             entry.className = `log-entry ${type}`;
             entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
-            logContainer.appendChild(entry);
-            logContainer.scrollTop = logContainer.scrollHeight;
+            logContent.appendChild(entry);
+            logContent.scrollTop = logContainer.scrollHeight;
         }
 
 

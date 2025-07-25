@@ -18,7 +18,7 @@ from bailing import (
     memory
 )
 from bailing.dialogue import Message, Dialogue
-from bailing.utils import is_interrupt, read_config, is_segment, extract_json_from_string
+from bailing.utils import is_interrupt, read_config, is_segment, extract_json_from_string, is_segment_sentence
 from bailing.prompt import sys_prompt
 
 from plugins.registry import Action
@@ -283,21 +283,28 @@ class Robot(ABC):
                     content_arguments+=content
                 else:
                     response_message.append(content)
+                    response_message_concat = "".join(response_message)
                     end_time = time.time()  # 记录结束时间
-                    logger.debug(f"大模型返回时间时间: {end_time - start_time} 秒, 生成token={content}")
-                    if is_segment(response_message):
-                        segment_text = "".join(response_message[start:])
+                    logger.debug(f"大模型返回时间时间tool: {end_time - start_time} 秒, 生成token={content}")
+                    flag_segment, index_segment = is_segment_sentence(response_message_concat, start)
+                    logger.debug(
+                        f"大模型返回时间时间tool: flag_segment={flag_segment} 秒, index_segment={index_segment}")
+
+                    if flag_segment:
+                        segment_text = response_message_concat[start:index_segment + 1]
                         # 为了保证语音的连贯，至少2个字才转tts
+
                         if len(segment_text) <= max(2, start):
                             continue
                         future = self.executor.submit(self.speak_and_play, segment_text)
                         self.tts_queue.put(future)
                         # futures.append(future)
-                        start = len(response_message)
+                        start = index_segment + 1  # len(response_message)
 
         if not tool_call_flag:
-            if start < len(response_message):
-                segment_text = "".join(response_message[start:])
+            response_message_concat = "".join(response_message)
+            if start < len(response_message_concat):
+                segment_text = response_message_concat[start:]
                 future = self.executor.submit(self.speak_and_play, segment_text)
                 self.tts_queue.put(future)
         else:
@@ -371,25 +378,29 @@ class Robot(ABC):
             # 提交 TTS 任务到线程池
             for content in llm_responses:
                 response_message.append(content)
+                response_message_concat = "".join(response_message)
                 end_time = time.time()  # 记录结束时间
-                logger.debug(f"大模型返回时间时间: {end_time - start_time} 秒, 生成token={content}")
-                if is_segment(response_message):
-                    segment_text = "".join(response_message[start:])
+                logger.debug(f"大模型返回时间时间tool: {end_time - start_time} 秒, 生成token={content}")
+                flag_segment, index_segment = is_segment_sentence(response_message_concat, start)
+                logger.debug(
+                    f"大模型返回时间时间tool: flag_segment={flag_segment} 秒, index_segment={index_segment}")
+                if flag_segment:
+                    segment_text = response_message_concat[start:index_segment + 1]
                     # 为了保证语音的连贯，至少2个字才转tts
-                    if len(segment_text)<=max(2, start):
+
+                    if len(segment_text) <= max(2, start):
                         continue
                     future = self.executor.submit(self.speak_and_play, segment_text)
                     self.tts_queue.put(future)
-                    #futures.append(future)
-                    start = len(response_message)
+                    # futures.append(future)
+                    start = index_segment + 1  # len(response_message)
 
             # 处理剩余的响应
-            if start < len(response_message):
-                segment_text = "".join(response_message[start:])
+            response_message_concat = "".join(response_message)
+            if start < len(response_message_concat):
+                segment_text = response_message_concat[start:]
                 future = self.executor.submit(self.speak_and_play, segment_text)
                 self.tts_queue.put(future)
-                #futures.append(future)
-
             # 等待所有 TTS 任务完成
             """
             for future in futures:

@@ -139,11 +139,15 @@ def get_lan_ip():
 if __name__ == "__main__":
     lan_ip = get_lan_ip()
     print(f"\n请在局域网中使用以下地址访问:")
-    print(f"http://localhost:8000\n")
+    print(f"https://{lan_ip}:8000\n")
+    # 生成自签名证书 (开发环境)
+    # openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes
     uvicorn.run(
         app,
         host="0.0.0.0",
         port=8000,
+        ssl_keyfile="./key.pem",  # 可选：添加自签名证书
+        ssl_certfile="./cert.pem",
         ws_ping_interval=20,
         ws_ping_timeout=30
     )

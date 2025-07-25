@@ -37,6 +37,12 @@ def is_segment(tokens):
     else:
         return False
 
+def is_segment_sentence(tokens, start_index):
+    for i in range(len(tokens) - 1, start_index - 1, -1):
+        if tokens[i] in (",", ".", "?", "，", "。", "？", "！", "!", ";", "；", ":", "："):
+            return True, i
+    return False, None
+
 def is_interrupt(query: str):
     for interrupt_word in ("停一下", "听我说", "不要说了", "stop", "hold on", "excuse me"):
         if query.lower().find(interrupt_word)>=0:
