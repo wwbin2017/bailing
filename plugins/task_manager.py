@@ -41,9 +41,9 @@ auto_import_modules('plugins.functions')
 class TaskManager:
     def __init__(self, config, result_queue: queue.Queue):
         self.functions = read_json_file(config.get("functions_call_name"))
-        aigc_manus_enabled = config.get("aigc_manus_enabled", False)
-        if not aigc_manus_enabled:
-            self.functions = [item for item in self.functions if item["function"]["name"] != 'aigc_manus']
+        aigc_enabled = config.get("aigc_enabled", False)
+        if not aigc_enabled:
+            self.functions = [item for item in self.functions if item["function"]["name"] != 'aigc']
         self.task_queue = queue.Queue()
         # 初始化线程池
         self.task_executor = ThreadPoolExecutor(max_workers=10)

@@ -91,7 +91,7 @@ Memory:
 
 TaskManager:
   functions_call_name: plugins/function_calls_config.json
-  aigc_manus_enabled: false
+  aigc_enabled: false
 
 
 
