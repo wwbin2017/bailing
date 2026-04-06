@@ -55,7 +55,7 @@ class Memory:
         match = re.search(r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})', filename)
         if match:
             return match.group(1)
-        return None
+        return "2024-10-03 13:03:35"
 
     @staticmethod
     def read_dialogue_file(file_path):

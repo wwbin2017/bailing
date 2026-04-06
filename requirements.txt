@@ -10,8 +10,8 @@ PyAudio==0.2.14
 pydub==0.25.1
 PyYAML==6.0.2
 silero_vad==5.1
-torch==2.4.1
-torchaudio==2.4.1
+torch
+torchaudio
 Flask-SocketIO~=5.3.7
 schedule==1.2.2
 requests==2.32.2
@@ -25,3 +25,4 @@ kokoro>=0.8.1
 misaki[zh]>=0.8.1
 fastapi==0.116.1
 uvicorn==0.35.0
+dotenv

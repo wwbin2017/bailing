@@ -123,7 +123,7 @@ class Robot(ABC):
                 try:
                     future = self.tts_queue.get()
                     try:
-                        tts_file = future.result(timeout=5)
+                        tts_file = future.result(timeout=10)
                     except TimeoutError:
                         logger.error("TTS 任务超时")
                         continue
@@ -291,7 +291,7 @@ class Robot(ABC):
                         segment_text = response_message_concat[start:index_segment + 1]
                         # 为了保证语音的连贯，至少2个字才转tts
 
-                        if len(segment_text) <= max(2, start):
+                        if len(segment_text) <= 2: #max(2, start):
                             continue
                         future = self.executor.submit(self.speak_and_play, segment_text)
                         self.tts_queue.put(future)
@@ -385,7 +385,7 @@ class Robot(ABC):
                     segment_text = response_message_concat[start:index_segment + 1]
                     # 为了保证语音的连贯，至少2个字才转tts
 
-                    if len(segment_text) <= max(2, start):
+                    if len(segment_text) <= 2: #max(2, start):
                         continue
                     future = self.executor.submit(self.speak_and_play, segment_text)
                     self.tts_queue.put(future)

@@ -123,12 +123,12 @@
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "question": {
+                    "query": {
                         "type": "string",
                         "description": "用户的复杂问题"
                     }
                 },
-                "required": ["question"]
+                "required": ["query"]
             }
         }
     }

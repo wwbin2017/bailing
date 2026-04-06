@@ -5,12 +5,18 @@ import queue
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import json
+from dotenv import load_dotenv
+from pathlib import Path
 
 from plugins.registry import function_registry, Action, ActionResponse, ToolType
 from bailing.utils import read_json_file
-
-
+import logging
 logger = logging.getLogger(__name__)
+
+BASE_DIR = Path(__file__).resolve().parent.parent  # 如果在 plugins/ 中，需要两级 parent
+dotenv_path = BASE_DIR / "config" / ".env"
+load_dotenv(dotenv_path=dotenv_path)
 
 
 def auto_import_modules(package_name):
@@ -32,7 +38,7 @@ def auto_import_modules(package_name):
             importlib.import_module(full_module_name)
             logger.info(f"模块 '{full_module_name}' 已加载")
         except Exception as e:
-            logger.error(f"模块 '{full_module_name}' 加载失败")
+            logger.error(f"模块 '{module_name}' 加载失败：{e}")
 
 # 自动导入 'functions' 包中的所有模块
 auto_import_modules('plugins.functions')
@@ -40,7 +46,7 @@ auto_import_modules('plugins.functions')
 
 class TaskManager:
     def __init__(self, config, result_queue: queue.Queue):
-        self.functions = read_json_file(config.get("functions_call_name"))
+        self.functions = read_json_file(config.get("functions_call_name", "function_calls_config.json"))
         aigc_enabled = config.get("aigc_enabled", False)
         if not aigc_enabled:
             self.functions = [item for item in self.functions if item["function"]["name"] != 'aigc']
@@ -96,17 +102,25 @@ class TaskManager:
     def tool_call(self, func_name, func_args) -> ActionResponse:
         if func_name not in function_registry:
             return ActionResponse(action=Action.NOTFOUND, result="没有找到相应函数", response=None)
+        if isinstance(func_args, str):
+            try:
+                func_args = json.loads(func_args)
+            except Exception as e:
+                logger.error(f"{func_name}, {func_args}, {e}")
         func = function_registry[func_name]
         if func.action == ToolType.NONE: #  = (1, "调用完工具后，啥也不用管")
             future = self.task_executor.submit(self.call_function, func_name, **func_args)
             self.task_queue.put(future)
             return ActionResponse(action=Action.NONE, result=None, response=None)
         elif func.action == ToolType.WAIT: # = (2, "调用工具，等待函数返回")
-            result = self.call_function( func_name, **func_args)
-            return ActionResponse(action=Action.RESPONSE, result=result, response=None)
+            try:
+                result = self.call_function( func_name, **func_args)
+            except Exception as e:
+                logger.error(f"{func_name}, {func_args}, {func_args}, {e}")
+            return ActionResponse(action=Action.REQLLM, result=result.response, response=result.response)
         elif func.action == ToolType.SCHEDULER: # = (3, "定时任务，时间到了之后，直接回复")
             result = self.call_function(func_name, **func_args)
-            return ActionResponse(action=Action.RESPONSE, result=result, response=None)
+            return ActionResponse(action=Action.RESPONSE, result=result.response, response=result.response)
         elif func.action == ToolType.TIME_CONSUMING: #  = (4, "耗时任务，需要一定时间，后台运行有结果后再回复")
             future = self.task_executor.submit(self.call_function, func_name, **func_args)
             self.task_queue.put(future)
@@ -116,7 +130,12 @@ class TaskManager:
             return ActionResponse(action=Action.ADDSYSTEMSPEAK, result=result, response=None)
         else:
             result = self.call_function(func_name, **func_args)
-            return ActionResponse(action=Action.RESPONSE, result=result, response=None)
+            return ActionResponse(action=Action.REQLLM, result=result.response, response=result.response)
 
 if __name__ == "__main__":
-    pass
+    a = TaskManager({}, queue.Queue())
+    b = a.call_function("get_weather", **{"city": "zhejiang/hangzhou"})
+    print(b.action, b.result, b.response)
+
+    rsp = a.call_function("aigc", **{"query": "你可以做什么"})
+    print(rsp.response, rsp.action, rsp.result)

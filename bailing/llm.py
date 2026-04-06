@@ -41,7 +41,6 @@ class OpenAILLM(LLM):
                 stream=True,
                 tools=functions_call
             )
-            #print(responses)
             for chunk in responses:
                 yield chunk.choices[0].delta.content, chunk.choices[0].delta.tool_calls
                 #yield chunk.choices[0].delta.get("content", "")
@@ -111,9 +110,33 @@ def create_instance(class_name, *args, **kwargs):
 
 if __name__ == "__main__":
     # 创建 DeepSeekLLM 的实例
-    deepseek = create_instance("DeepSeekLLM", api_key="your_api_key", base_url="your_base_url")
-    dialogue = [{"role": "user", "content": "hello"}]
+    config = {"model_name":"deepseek-chat"
+        ,"api_key":"your_api_key", "url":"https://api.deepseek.com"}
 
+    deepseek = create_instance("OpenAILLM", config)
+
+    dialogue = [{"role": "user", "content": "杭州天气怎么样"}]
+    tools = [
+        {
+            "type": "function",
+            "function": {
+                "name": "get_weather",
+                "description": "获取某个地点的天气，用户应先提供一个位置，比如用户说杭州天气，参数为：zhejiang/hangzhou，比如用户说北京天气怎么样，参数为：beijing/beijing",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "city": {
+                            "type": "string",
+                            "description": "城市，zhejiang/hangzhou"
+                        }
+                    },
+                    "required": [
+                        "city"
+                    ]
+                }
+            }
+        }
+    ]
     # 打印逐步生成的响应内容
-    for chunk in deepseek.response(dialogue):
+    for chunk in deepseek.response_call(dialogue, functions_call=tools):
         print(chunk)

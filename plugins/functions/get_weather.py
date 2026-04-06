@@ -20,7 +20,7 @@ def get_weather(city: str):
     soup = BeautifulSoup(response.text, "html.parser")
     weather = soup.find('meta', attrs={'name':'description'})["content"]
     weather = weather.replace("墨迹天气", "")
-    return ActionResponse(Action.REQLLM, weather, None)
+    return ActionResponse(Action.REQLLM, weather, weather)
 
 if __name__ == "__main__":
     rsp = get_weather("zhejiang/hangzhou")
