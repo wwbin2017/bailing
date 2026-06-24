@@ -87,7 +87,8 @@ Make sure you have the following tools and libraries installed in your developme
 
      - Open `config/config.yaml` to configure ASR, LLM, etc.
      - Download `SenseVoiceSmall` to the `models/SenseVoiceSmall` directory [SenseVoiceSmall Download](https://huggingface.co/FunAudioLLM/SenseVoiceSmall/tree/main)
-     - Get an API key from the DeepSeek website: [DeepSeek API Key](https://platform.deepseek.com/api_keys), or you can configure other models such as OpenAI, Qwen, Gemini, 01yi.
+     - Get an API key from the DeepSeek website: [DeepSeek API Key](https://platform.deepseek.com/api_keys), or you can configure other models such as OpenAI, Qwen, Gemini, 01yi, MiniMax.
+       - To use **MiniMax**: set `selected_module.LLM` to `MiniMaxLLM` in `config/config.yaml` and fill in `api_key` under `LLM.MiniMaxLLM` (default model `MiniMax-M3`, base URL `https://api.minimax.io/v1`). MiniMax also provides cloud TTS: set `selected_module.TTS` to `MiniMaxTTS` and reuse the same `api_key` (default model `speech-2.8-hd`).
 
 4. Run the project:
 

@@ -115,7 +115,8 @@ Robot 负责高效的任务管理与记忆管理，能够智能地处理用户�
 
      - 打开config/config.yaml 配置ASR LLM等相关配置
      - 下载SenseVoiceSmall到目录models/SenseVoiceSmall [SenseVoiceSmall下载地址](https://huggingface.co/FunAudioLLM/SenseVoiceSmall/tree/main)
-     - 去deepseek官网，获取配置api_key，[deepseek获取api_key](https://platform.deepseek.com/api_keys)，当然也可以配置openai、qwen、gemini、01yi等其他模型
+     - 去deepseek官网，获取配置api_key，[deepseek获取api_key](https://platform.deepseek.com/api_keys)，当然也可以配置openai、qwen、gemini、01yi、MiniMax 等其他模型
+       - 使用 **MiniMax**：在 `config/config.yaml` 中将 `selected_module.LLM` 设为 `MiniMaxLLM`，并在 `LLM.MiniMaxLLM` 下填入 `api_key`（默认模型 `MiniMax-M3`，Base URL `https://api.minimax.io/v1`）。MiniMax 也提供云端 TTS：将 `selected_module.TTS` 设为 `MiniMaxTTS` 并填入同一 `api_key` 即可（默认模型 `speech-2.8-hd`）。
      - 如果需要使用通用AIGC配置（测试中），不可用的话，可以使用tag 分支 v0.0.1 v0.0.2 
        - /third_party/OpenManus/config/config.toml  需要配置里面的 model、base_url、api_key 
      - 为支持openclaw，需要修改config/.env，配置openclaw Auth权限
