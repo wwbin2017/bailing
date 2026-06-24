@@ -8,6 +8,7 @@ from abc import ABC, ABCMeta, abstractmethod
 from datetime import datetime
 from gtts import gTTS
 import edge_tts
+import requests
 import ChatTTS
 import torch
 import torchaudio
@@ -293,6 +294,91 @@ class KOKOROTTS(AbstractTTS):
         except Exception as e:
             logger.error(f"[KOKOROTTS] Failed to generate TTS: {e}")
             return ""
+
+
+class MiniMaxTTS(AbstractTTS):
+    """MiniMax Text-to-Speech provider (T2A v2 HTTP API).
+
+    Converts text to speech via MiniMax's cloud TTS service and writes the
+    resulting audio to a local file. The API returns hex-encoded audio (not
+    base64). Docs: https://platform.minimax.io/docs/api-reference/speech-t2a-http
+
+    config keys:
+      - api_key:     MiniMax API key (shared with the Chat API)
+      - voice:       voice id, e.g. 'English_Graceful_Lady' (default)
+      - model:       TTS model id, e.g. 'speech-2.8-hd' (default)
+      - base_url:    API base url, default 'https://api.minimax.io'
+      - output_file: directory to write audio files to
+      - format:      audio format, default 'mp3'
+      - sample_rate / bitrate / speed / vol / pitch: optional fine tuning
+    """
+
+    def __init__(self, config):
+        self.output_file = config.get("output_file", "tmp/")
+        self.api_key = config.get("api_key")
+        self.voice = config.get("voice", "English_Graceful_Lady")
+        self.model = config.get("model", "speech-2.8-hd")
+        self.base_url = config.get("base_url", "https://api.minimax.io").rstrip("/")
+        self.format = config.get("format", "mp3")
+        self.sample_rate = config.get("sample_rate", 32000)
+        self.bitrate = config.get("bitrate", 128000)
+        self.speed = config.get("speed", 1)
+        self.vol = config.get("vol", 1)
+        self.pitch = config.get("pitch", 0)
+
+    def _generate_filename(self, extension=".mp3"):
+        return os.path.join(self.output_file, f"tts-{datetime.now().date()}@{uuid.uuid4().hex}{extension}")
+
+    def _log_execution_time(self, start_time):
+        end_time = time.time()
+        execution_time = end_time - start_time
+        logger.debug(f"Execution Time: {execution_time:.2f} seconds")
+
+    def to_tts(self, text):
+        tmpfile = self._generate_filename(f".{self.format}")
+        start_time = time.time()
+        payload = {
+            "model": self.model,
+            "text": text,
+            "stream": False,
+            "voice_setting": {
+                "voice_id": self.voice,
+                "speed": self.speed,
+                "vol": self.vol,
+                "pitch": self.pitch,
+            },
+            "audio_setting": {
+                "sample_rate": self.sample_rate,
+                "bitrate": self.bitrate,
+                "format": self.format,
+                "channel": 1,
+            },
+        }
+        headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json",
+        }
+        try:
+            response = requests.post(
+                f"{self.base_url}/v1/t2a_v2", headers=headers, json=payload, timeout=30
+            )
+            response.raise_for_status()
+            result = response.json()
+            base_resp = result.get("base_resp", {})
+            if base_resp.get("status_code") != 0:
+                logger.error(f"MiniMax TTS failed: {base_resp.get('status_msg')}")
+                return None
+            audio_hex = result.get("data", {}).get("audio")
+            if not audio_hex:
+                logger.error("MiniMax TTS returned empty audio")
+                return None
+            with open(tmpfile, "wb") as f:
+                f.write(bytes.fromhex(audio_hex))  # MiniMax returns hex, not base64
+            self._log_execution_time(start_time)
+            return tmpfile
+        except Exception as e:
+            logger.error(f"Failed to generate TTS file: {e}")
+            return None
 
 
 def create_instance(class_name, *args, **kwargs):

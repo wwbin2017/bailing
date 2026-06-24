@@ -98,6 +98,26 @@ class OllamaLLM(LLM):
             logger.error(f"OllamaLLM tool-call error: {e}")
 
 
+class MiniMaxLLM(OpenAILLM):
+    """MiniMax LLM provider.
+
+    MiniMax exposes an OpenAI-compatible Chat Completions API, so we simply
+    reuse OpenAILLM and provide sensible defaults for the base URL and model.
+    Docs: https://platform.minimax.io/docs/api-reference/text-openai-api
+    """
+
+    DEFAULT_BASE_URL = "https://api.minimax.io/v1"
+    DEFAULT_MODEL = "MiniMax-M3"
+
+    def __init__(self, config):
+        config = dict(config)
+        if not config.get("url"):
+            config["url"] = self.DEFAULT_BASE_URL
+        if not config.get("model_name"):
+            config["model_name"] = self.DEFAULT_MODEL
+        super().__init__(config)
+
+
 def create_instance(class_name, *args, **kwargs):
     # 获取类对象
     cls = globals().get(class_name)
