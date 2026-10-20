@@ -24,6 +24,8 @@ class Dialogue:
     def __init__(self, dialogue_history_path):
         self.dialogue_history_path = dialogue_history_path
         self.dialogue: List[Message] = []
+        # Anonymous search correlation follows this conversation, not an HTTP client.
+        self.search_session_id = str(uuid.uuid4())
         # 获取当前时间
         self.current_time  = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 

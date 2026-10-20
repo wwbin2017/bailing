@@ -6,6 +6,7 @@ import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import json
+import uuid
 from dotenv import load_dotenv
 from pathlib import Path
 
@@ -45,11 +46,12 @@ auto_import_modules('plugins.functions')
 
 
 class TaskManager:
-    def __init__(self, config, result_queue: queue.Queue):
+    def __init__(self, config, result_queue: queue.Queue, search_session_id=None):
         self.functions = read_json_file(config.get("functions_call_name", "function_calls_config.json"))
         aigc_enabled = config.get("aigc_enabled", False)
         if not aigc_enabled:
             self.functions = [item for item in self.functions if item["function"]["name"] != 'aigc']
+        self.search_session_id = search_session_id or str(uuid.uuid4())
         self.task_queue = queue.Queue()
         # 初始化线程池
         self.task_executor = ThreadPoolExecutor(max_workers=10)
@@ -107,6 +109,16 @@ class TaskManager:
                 func_args = json.loads(func_args)
             except Exception as e:
                 logger.error(f"{func_name}, {func_args}, {e}")
+        if func_name in ("parallel_web_search", "parallel_web_fetch"):
+            # Respect custom tool lists and keep conversation context out of the
+            # model-visible arguments. Each Robot owns one Dialogue/TaskManager.
+            if not any(item["function"]["name"] == func_name for item in self.functions):
+                return ActionResponse(Action.NOTFOUND, "没有启用相应函数", None)
+            argument = "query" if func_name == "parallel_web_search" else "urls"
+            if (not isinstance(func_args, dict) or argument not in func_args
+                    or set(func_args) - {argument, "_session_id"}):
+                return ActionResponse(Action.REQLLM, "工具参数必须包含且仅包含 " + argument, None)
+            func_args = {argument: func_args[argument], "_session_id": self.search_session_id}
         func = function_registry[func_name]
         if func.action == ToolType.NONE: #  = (1, "调用完工具后，啥也不用管")
             future = self.task_executor.submit(self.call_function, func_name, **func_args)

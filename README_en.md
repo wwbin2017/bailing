@@ -132,6 +132,26 @@ In the future, Bailing will evolve into a personal assistant similar to JARVIS, 
 | `open_application`      | Open a specified application on a Mac computer       | Launch a specified application on Mac                         | User says: “Open Safari.” → `application_name: 'Safari'`       |
 | `web_search`            | Search the web for a specific query                  | Return search results for a given query                      | User says: “Search for the latest tech news.” → `query: 'Latest tech news'` |
 
+## Free web search and page reading
+
+The shipped tool list includes `parallel_web_search` and `parallel_web_fetch`, using
+[Parallel Search MCP](https://docs.parallel.ai/integrations/mcp/search-mcp) for web
+search and page excerpts. Search runs in Fast mode without a Parallel account or
+API key. With `StartTaskMode: true` in `config/config.yaml`, ask Bailing to search
+for current information or read a specific HTTP/HTTPS page. Search results include
+source URLs; page reading is intended for requests that need more than search excerpts.
+
+Queries and requested URLs are sent to `https://search.parallel.ai/mcp`. The free
+service has usage limits. Each operation has a 30-second deadline and returns an
+error to the model on failure, without switching services. A new conversation has
+its own anonymous identifier, reused across its searches and page reads.
+
+Existing custom `TaskManager.functions_call_name` files keep their tool choices.
+To enable these tools there, copy the two Parallel entries from
+`plugins/function_calls_config.json` into your custom list. Remove either entry to
+disable that tool, or set `StartTaskMode: false` to disable model tool calling.
+Existing Baidu/Google `web_search` and OpenClaw settings are unchanged.
+
 ## Contributing Guidelines
 
 We welcome contributions in any form! If you have suggestions for improving the Bailing project or encounter issues, please report them through [GitHub Issues](https://github.com/wwbin2017/bailing/issues) or submit a Pull Request.

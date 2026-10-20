@@ -83,3 +83,24 @@ if __name__ == "__main__":
 | `open_application`    | 在 Mac 电脑上打开指定的应用程序                | 用户可以指定应用程序的名称，脚本将在 Mac 上启动相应的应用 | 用户说：“打开Safari。” → `application_name: 'Safari'`        |
 | `web_search`          | 在网上搜索指定的关键词                        | 根据用户提供的搜索内容，返回相应的搜索结果                 | 用户说：“搜索最新的科技新闻。” → `query: '最新的科技新闻'`    |
 
+
+
+## Parallel 联网工具
+
+内置 `parallel_web_search(query)` 和 `parallel_web_fetch(urls)` 使用免费、无需
+API key 的 [Parallel Search MCP](https://docs.parallel.ai/integrations/mcp/search-mcp)。
+工具已加入默认的 `function_calls_config.json`，原有自定义列表需要手动加入这两个条目。
+`TaskManager` 通过 `WAIT` 路径将摘录和来源 URL 交回模型生成回答，不在后台直接朗读原始 JSON。
+删除相应条目可禁止该工具，`StartTaskMode: false` 关闭模型工具调用。
+
+传输使用项目已依赖的 `httpx`，支持 MCP Streamable HTTP 的 JSON 和 SSE 响应，
+每次操作总超时为 30 秒。每个 `Dialogue` 拥有一个匿名 UUID，`Robot` 将其传入
+`TaskManager`，用于同一对话的搜索和网页读取。HTTP 连接标识与对话标识分开管理。
+
+运行不依赖音频设备的回归测试：
+
+```bash
+python -m unittest discover -s tests -v
+```
+
+测试使用模拟 HTTP 服务和脚本化模型响应验证正常工具分发与结果消费；不启动 ASR/TTS 模型。

@@ -95,7 +95,8 @@ class Robot(ABC):
         #rag.Rag(config["Rag"])  # 第一次初始化
 
         self.task_queue = queue.Queue()
-        self.task_manager = TaskManager(config.get("TaskManager"), self.task_queue)
+        self.task_manager = TaskManager(config.get("TaskManager"), self.task_queue,
+                                        search_session_id=self.dialogue.search_session_id)
         self.start_task_mode = config.get("StartTaskMode")
 
         if config["selected_module"]["Player"].lower().find("websocket") > -1:
