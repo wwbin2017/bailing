@@ -114,9 +114,11 @@ class TaskManager:
             # model-visible arguments. Each Robot owns one Dialogue/TaskManager.
             if not any(item["function"]["name"] == func_name for item in self.functions):
                 return ActionResponse(Action.NOTFOUND, "没有启用相应函数", None)
-            if not isinstance(func_args, dict):
-                return ActionResponse(Action.REQLLM, "工具参数必须为 JSON 对象", None)
-            func_args = dict(func_args, _session_id=self.search_session_id)
+            argument = "query" if func_name == "parallel_web_search" else "urls"
+            if (not isinstance(func_args, dict) or argument not in func_args
+                    or set(func_args) - {argument, "_session_id"}):
+                return ActionResponse(Action.REQLLM, "工具参数必须包含且仅包含 " + argument, None)
+            func_args = {argument: func_args[argument], "_session_id": self.search_session_id}
         func = function_registry[func_name]
         if func.action == ToolType.NONE: #  = (1, "调用完工具后，啥也不用管")
             future = self.task_executor.submit(self.call_function, func_name, **func_args)

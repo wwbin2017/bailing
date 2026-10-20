@@ -160,6 +160,23 @@ class ParallelRuntimeTests(unittest.TestCase):
             manager.tool_call('parallel_web_search', '[]')
         self.assertFalse(server.requests)
 
+    def test_missing_and_unexpected_arguments_return_tool_errors(self):
+        manager = self.manager()
+        server = MCPServer()
+        with patch.object(parallel_mcp.httpx, 'AsyncClient', server.client):
+            for name, arguments in [
+                    ('parallel_web_search', {}), ('parallel_web_fetch', {}),
+                    ('parallel_web_search', {"query": "Python", "unexpected": "x"}),
+                    ('parallel_web_fetch', {"urls": ["https://www.python.org/"], "unexpected": "x"}),
+                    ('parallel_web_search', {"urls": ["https://www.python.org/"]}),
+                    ('parallel_web_fetch', {"query": "Python"})]:
+                with self.subTest(name=name, arguments=arguments):
+                    result = manager.tool_call(name, json.dumps(arguments))
+                    self.assertEqual(result.action, Action.REQLLM)
+                    self.assertIsInstance(result.result, str)
+                    self.assertTrue(result.result)
+        self.assertFalse(server.requests)
+
     def test_protocol_errors_timeouts_and_sse(self):
         manager = self.manager()
         for failure in ['timeout', 'http', 'quota', 'rpc', 'malformed']:
