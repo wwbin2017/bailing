@@ -181,6 +181,23 @@ Robot 负责高效的任务管理与记忆管理，能够智能地处理用户�
 
 
 
+## 免费联网搜索与网页读取
+
+默认工具列表已包含 `parallel_web_search` 和 `parallel_web_fetch`，通过
+[Parallel Search MCP](https://docs.parallel.ai/integrations/mcp/search-mcp)
+提供联网搜索及网页正文摘录。搜索使用 Fast 模式，无需 Parallel 账号或 API key。
+保持 `config/config.yaml` 中 `StartTaskMode: true`，即可询问“搜索 Python 最新版本”，
+或提供具体 HTTP/HTTPS 网页地址让助手读取。搜索返回来源链接供模型引用；仅在搜索摘录不足时读取网页。
+
+查询内容和要读取的 URL 会发送至 `https://search.parallel.ai/mcp`。
+免费服务有使用额度，每次操作最多等待 30 秒；失败时向模型返回错误，不切换到其他服务。
+每个新对话使用独立的匿名标识，同一对话的后续搜索和网页读取复用该标识。
+
+使用自定义 `TaskManager.functions_call_name` 的已有用户继续使用原工具列表。
+如需启用，请将 `plugins/function_calls_config.json` 中的两个 Parallel 工具条目加入自定义列表。
+如需禁用，请删除相应条目；设置 `StartTaskMode: false` 可关闭所有模型工具调用。
+已有 `web_search` 的百度/Google 配置和 OpenClaw 设置保持原样。
+
 ## 贡献指南
 
 欢迎任何形式的贡献！如果你对百聆项目有改进建议或发现问题，请通过 [GitHub Issues](https://github.com/wwbin2017/bailing/issues) 进行反馈或提交 Pull Request。
